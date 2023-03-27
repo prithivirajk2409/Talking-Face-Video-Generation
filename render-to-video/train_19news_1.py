@@ -1,59 +1,59 @@
 import os, sys, glob
 
 def get_news(n):
-	trainN=300; testN=100
-	video = '19_news/'+str(n);name = str(n)+'_bmold_win3';start = 0;
-	print(video,name)
+        trainN=300; testN=100
+        video = '19_news/'+str(n);name = str(n)+'_bmold_win3';start = 0;
+        print(video,name)
 
-	rootdir = os.path.join(os.getcwd(),'../Deep3DFaceReconstruction/output/render/')
-	srcdir = os.path.join(rootdir,video)
-	srcdir2 = srcdir.replace(video,video+'/bm')
+        rootdir = os.path.join(os.getcwd(),'../Deep3DFaceReconstruction/output/render/')
+        srcdir = os.path.join(rootdir,video)
+        srcdir2 = srcdir.replace(video,video+'/bm')
 
-	if 'bmold' not in name:
-		cmd = "cd "+rootdir+"/..; matlab -nojvm -nosplash -nodesktop -nodisplay -r \"alpha_blend_news('" + video + "'," + str(start) + "," + str(trainN+testN) + "); quit;\""
-	else:
-		cmd = "cd "+rootdir+"/..; matlab -nojvm -nosplash -nodesktop -nodisplay -r \"alpha_blend_newsold('" + video + "'," + str(start) + "," + str(trainN+testN) + "); quit;\""
-	os.system(cmd)
-	if not os.path.exists('datasets/list/trainA'):
-		os.makedirs('datasets/list/trainA')
-	if not os.path.exists('datasets/list/trainB'):
-		os.makedirs('datasets/list/trainB')
-	f1 = open('datasets/list/trainA/%s.txt'%name,'w')
-	f2 = open('datasets/list/trainB/%s.txt'%name,'w')
-	if 'win3' in name:
-		start1 = start + 2
-	else:
-		start1 = start
-	for i in range(start1,start+trainN):
-		if 'bmold' not in name:
-			print(os.path.join(srcdir2,'frame%d_render_bm.png'%i),file=f1)
-		else:
-			print(os.path.join(srcdir2,'frame%d_renderold_bm.png'%i),file=f1)
-		print(os.path.join(srcdir,'frame%d.png'%i),file=f2)
-	f1.close()
-	f2.close()
-	if not os.path.exists('datasets/list/testA'):
-		os.makedirs('datasets/list/testA')
-	if not os.path.exists('datasets/list/testB'):
-		os.makedirs('datasets/list/testB')
-	f1 = open('datasets/list/testA/%s.txt'%name,'w')
-	f2 = open('datasets/list/testB/%s.txt'%name,'w')
-	for i in range(start+trainN,start+trainN+testN):
-		if 'bmold' not in name:
-			print(os.path.join(srcdir2,'frame%d_render_bm.png'%i),file=f1)
-		else:
-			print(os.path.join(srcdir2,'frame%d_renderold_bm.png'%i),file=f1)
-		print(os.path.join(srcdir,'frame%d.png'%i),file=f2)
-	f1.close()
-	f2.close()
+        if 'bmold' not in name:
+                cmd = "cd "+rootdir+"/..; octave --eval \"pkg load image; alpha_blend_news('" + video + "'," + str(start) + "," + str(trainN+testN) + "); quit;\""
+        else:
+                cmd = "cd "+rootdir+"/..; octave --eval \"pkg load image; alpha_blend_newsold('" + video + "'," + str(start) + "," + str(trainN+testN) + "); quit;\""
+        os.system(cmd)
+        if not os.path.exists('datasets/list/trainA'):
+                os.makedirs('datasets/list/trainA')
+        if not os.path.exists('datasets/list/trainB'):
+                os.makedirs('datasets/list/trainB')
+        f1 = open('datasets/list/trainA/%s.txt'%name,'w')
+        f2 = open('datasets/list/trainB/%s.txt'%name,'w')
+        if 'win3' in name:
+                start1 = start + 2
+        else:
+                start1 = start
+        for i in range(start1,start+trainN):
+                if 'bmold' not in name:
+                        print(os.path.join(srcdir2,'frame%d_render_bm.png'%i),file=f1)
+                else:
+                        print(os.path.join(srcdir2,'frame%d_renderold_bm.png'%i),file=f1)
+                print(os.path.join(srcdir,'frame%d.png'%i),file=f2)
+        f1.close()
+        f2.close()
+        if not os.path.exists('datasets/list/testA'):
+                os.makedirs('datasets/list/testA')
+        if not os.path.exists('datasets/list/testB'):
+                os.makedirs('datasets/list/testB')
+        f1 = open('datasets/list/testA/%s.txt'%name,'w')
+        f2 = open('datasets/list/testB/%s.txt'%name,'w')
+        for i in range(start+trainN,start+trainN+testN):
+                if 'bmold' not in name:
+                        print(os.path.join(srcdir2,'frame%d_render_bm.png'%i),file=f1)
+                else:
+                        print(os.path.join(srcdir2,'frame%d_renderold_bm.png'%i),file=f1)
+                print(os.path.join(srcdir,'frame%d.png'%i),file=f2)
+        f1.close()
+        f2.close()
 
 def save_each_60(folder):
-	pths = sorted(glob.glob(folder+'/*.pth'))
-	for pth in pths:
-		epoch = os.path.basename(pth).split('_')[0]
-		if epoch == '60':
-			continue
-		os.remove(pth)
+        pths = sorted(glob.glob(folder+'/*.pth'))
+        for pth in pths:
+                epoch = os.path.basename(pth).split('_')[0]
+                if epoch == '60':
+                        continue
+                os.remove(pth)
 
 n = int(sys.argv[1])
 gpu_id = int(sys.argv[2])

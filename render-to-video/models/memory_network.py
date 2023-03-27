@@ -95,7 +95,7 @@ class Memory_Network(nn.Module):
         #    print(top_index,'update',self.top_index[case_index],color_similarity)
         
         ## Case 2 replace
-        memory_mask = 1.0 - memory_mask
+        memory_mask = ~memory_mask
         case_index = top1_index[memory_mask]
         
         random_noise = random_uniform((self.mem_size, 1), -self.age_noise, self.age_noise)[:, 0]
