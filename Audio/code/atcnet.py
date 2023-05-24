@@ -11,6 +11,8 @@ from torch.nn.modules.module import _addindent
 import numpy as np
 from collections import OrderedDict
 import argparse
+import json
+import matplotlib.pyplot as plt
 
 from dataset import LRW_1D_lstm_3dmm, LRW_1D_lstm_3dmm_pose
 from dataset import News_1D_lstm_3dmm_pose
@@ -124,7 +126,7 @@ class Trainer():
         t00 = time.time()
         t0 = time.time()
         
-
+        loss_dict={}
         for epoch in range(self.start_epoch, config.max_epochs):
             for step, (coeff, audio, coeff2) in enumerate(self.data_loader):
                 t1 = time.time()
@@ -169,6 +171,7 @@ class Trainer():
                 self.opt_g.step()
                 self._reset_gradients()
 
+                loss_dict[epoch]=loss
 
                 if (step+1) % 10 == 0 or (step+1) == num_steps_per_epoch:
                     steps_remain = num_steps_per_epoch-step+1 + \
@@ -231,7 +234,15 @@ class Trainer():
                  
                 t0 = time.time()
         print("total time: {} second".format(time.time()-t00))
- 
+        keys = list(loss_dict.keys())
+        values = list(loss_dict.values())
+
+        plt.plot(keys, values, marker='o')
+        plt.xlabel("Epoch")
+        plt.ylabel("loss")
+        plt.title("Epoch versus loss on training audio network")
+        plt.show()
+
     def _reset_gradients(self):
         self.generator.zero_grad()
 
